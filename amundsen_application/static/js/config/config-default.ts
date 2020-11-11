@@ -132,28 +132,34 @@ const configDefault: AppConfig = {
         },
       },
       filterCategories: [
+        // {
+        //   categoryId: 'database',
+        //   displayName: 'Source',
+        //   helpText: 'Enter exact database name or a regex wildcard pattern',
+        //   type: FilterType.INPUT_SELECT,
+        // },
+        // {
+        //   categoryId: 'column',
+        //   displayName: 'Column',
+        //   helpText: 'Enter exact column name or a regex wildcard pattern',
+        //   type: FilterType.INPUT_SELECT,
+        // },
+        // {
+        //   categoryId: 'schema',
+        //   displayName: 'Schema',
+        //   helpText: 'Enter exact schema name or a regex wildcard pattern',
+        //   type: FilterType.INPUT_SELECT,
+        // },
+        // {
+        //   categoryId: 'table',
+        //   displayName: 'Table',
+        //   helpText: 'Enter exact table name or a regex wildcard pattern',
+        //   type: FilterType.INPUT_SELECT,
+        // },
         {
-          categoryId: 'database',
-          displayName: 'Source',
-          helpText: 'Enter exact database name or a regex wildcard pattern',
-          type: FilterType.INPUT_SELECT,
-        },
-        {
-          categoryId: 'column',
-          displayName: 'Column',
-          helpText: 'Enter exact column name or a regex wildcard pattern',
-          type: FilterType.INPUT_SELECT,
-        },
-        {
-          categoryId: 'schema',
-          displayName: 'Schema',
-          helpText: 'Enter exact schema name or a regex wildcard pattern',
-          type: FilterType.INPUT_SELECT,
-        },
-        {
-          categoryId: 'table',
-          displayName: 'Table',
-          helpText: 'Enter exact table name or a regex wildcard pattern',
+          categoryId: 'owner',
+          displayName: 'Owner',
+          helpText: 'Enter exact owner name or a regex wildcard pattern',
           type: FilterType.INPUT_SELECT,
         },
         {
@@ -161,6 +167,30 @@ const configDefault: AppConfig = {
           displayName: 'Tag',
           helpText: 'Enter exact tag name or a regex wildcard pattern',
           type: FilterType.INPUT_SELECT,
+        },
+        {
+          categoryId: 'crossplatform',
+          displayName: 'Cross-Platform Data',
+          helpText: 'See data from other platforms',
+          type: FilterType.CHECKBOX_SELECT,
+          options: [
+            {
+              displayName: 'Slack',
+              value: 'slack',
+            },
+            {
+              displayName: 'Google Drive',
+              value: 'google_drive',
+            },
+            {
+              displayName: 'Mode',
+              value: 'mode',
+            },
+            {
+              displayName: 'Tableau',
+              value: 'tableau',
+            },
+          ],
         },
       ],
       sortCriterias: {
