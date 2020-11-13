@@ -4,6 +4,7 @@
 @import 'variables';
 
 .search-page {
+  margin-top: 5%;
   display: flex;
   height: calc(100vh - #{$nav-bar-height + $footer-height});
 
@@ -12,6 +13,7 @@
   }
 
   .search-results {
+    margin-left: 3%;
     flex-grow: 1;
     width: 0; // Temporary hack since list-items use width %
     overflow-y: scroll;

@@ -4,7 +4,9 @@
 @import 'variables';
 
 .search-control-panel {
-  border-right: $search-panel-border-width solid $stroke;
+  border: 2px solid $stroke;
+  margin-left: 5%;
+  height: 95%;
   display: flex;
   flex: 0 0 $search-panel-width;
   flex-direction: column;
