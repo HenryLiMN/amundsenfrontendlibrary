@@ -32,7 +32,7 @@
 
   .resource-info {
     display: flex;
-    flex: 7;
+    flex: 6;
     margin-right: 24px;
     min-width: 0;
 
@@ -70,6 +70,36 @@
     }
   }
 
+  .resource-owner {
+    flex: 3;
+    text-align: center;
+    margin: auto 0;
+
+    .sb-avatar {
+      margin: auto 0 auto 0;
+    }
+  }
+
+  .resource-frequent-users {
+    flex: 4;
+    text-align: center;
+    margin: auto 0;
+
+    .sb-avatar {
+      margin: auto 3%;
+    }
+  }
+
+  .resource-tags {
+    flex: 2;
+    text-align: center;
+    margin: auto 0;
+
+    .tag-button {
+      margin: 2%;
+    }
+  }
+
   .resource-type {
     flex: 2;
     margin: auto 24px;
@@ -91,4 +121,8 @@
   .title-2 {
     color: $resource-title-color;
   }
+}
+
+.list-group-item .resource-list-item.table-list-item {
+  height: 140px;
 }
