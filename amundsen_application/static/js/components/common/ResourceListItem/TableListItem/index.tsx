@@ -2,9 +2,11 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import * as React from 'react';
+import * as Avatar from 'react-avatar';
 import { Link } from 'react-router-dom';
+import { OverlayTrigger, Popover } from 'react-bootstrap';
 
-import { ResourceType, TableResource } from 'interfaces';
+import { ResourceType, TableResource, TagType } from 'interfaces';
 
 import BookmarkIcon from 'components/common/Bookmark/BookmarkIcon';
 
@@ -12,6 +14,8 @@ import { getSourceDisplayName, getSourceIconClass } from 'config/config-utils';
 
 import BadgeList from 'components/common/BadgeList';
 import SchemaInfo from 'components/common/ResourceListItem/SchemaInfo';
+import { logClick } from 'ducks/utilMethods';
+import TagInfo from 'components/common/Tags/TagInfo';
 import { LoggingParams } from '../types';
 
 export interface TableListItemProps {
@@ -38,6 +42,32 @@ class TableListItem extends React.Component<TableListItemProps, {}> {
 
   render() {
     const { table } = this.props;
+    const DUMMY_EMAIL1 = 'henry@sieve.data';
+    const DUMMY_TARGET1 = '_blank';
+    const DUMMY_DISPLAY_NAME1 = 'Henry Li';
+    const DUMMY_EMAIL2 = 'carl@sieve.data';
+    const DUMMY_TARGET2 = '_blank';
+    const DUMMY_DISPLAY_NAME2 = 'Carl Fernandes';
+    const DUMMY_TAGS = [
+      {
+        tag_count: 5,
+        tag_name: 'PII',
+        tag_type: TagType.TAG,
+      },
+      {
+        tag_count: 1,
+        tag_name: 'Core',
+        tag_type: TagType.TAG,
+      },
+      {
+        tag_count: 2,
+        tag_name: 'Funnel',
+        tag_type: TagType.TAG,
+      },
+    ];
+    const tagBody = DUMMY_TAGS.map((tag, index) => (
+      <TagInfo data={tag} key={index} />
+    ));
 
     return (
       <li className="list-group-item clickable">
@@ -74,18 +104,95 @@ class TableListItem extends React.Component<TableListItemProps, {}> {
               </div>
             </div>
           </div>
-          <div className="resource-type">
-            {getSourceDisplayName(table.database, table.type)}
+          <div className="resource-owner">
+            <div className="resource-owner-label">Owned By</div>
+            <div className="resource-owner-avatar">
+              <OverlayTrigger
+                key={DUMMY_EMAIL1}
+                trigger={['hover', 'focus']}
+                placement="top"
+                overlay={
+                  <Popover id="popover-trigger-hover-focus">
+                    {DUMMY_EMAIL1}
+                  </Popover>
+                }
+              >
+                <Link
+                  className="avatar-overlap"
+                  onClick={logClick}
+                  data-type="frequent-users"
+                  to="/"
+                  target={DUMMY_TARGET1}
+                >
+                  <Avatar
+                    name={DUMMY_DISPLAY_NAME1}
+                    round
+                    size={25}
+                    style={{ position: 'relative' }}
+                  />
+                </Link>
+              </OverlayTrigger>
+            </div>
+            <div className="resource-owner-team">(Growth Team)</div>
           </div>
-          <div className="resource-badges">
-            {!!table.badges && table.badges.length > 0 && (
-              <div>
-                <div className="body-secondary-3">
-                  <BadgeList badges={table.badges} />
-                </div>
-              </div>
-            )}
-            <img className="icon icon-right" alt="" />
+          <div className="resource-frequent-users">
+            <div className="resource-frequent-users-label">Frequent Users</div>
+            <div className="resource-frequent-users-avatars">
+              <OverlayTrigger
+                key={DUMMY_EMAIL2}
+                trigger={['hover', 'focus']}
+                placement="top"
+                overlay={
+                  <Popover id="popover-trigger-hover-focus">
+                    {DUMMY_EMAIL2}
+                  </Popover>
+                }
+              >
+                <Link
+                  className="avatar-overlap"
+                  onClick={logClick}
+                  data-type="frequent-users"
+                  to="/"
+                  target={DUMMY_TARGET2}
+                >
+                  <Avatar
+                    name={DUMMY_DISPLAY_NAME2}
+                    round
+                    size={25}
+                    style={{ position: 'relative' }}
+                  />
+                </Link>
+              </OverlayTrigger>
+              <OverlayTrigger
+                key={DUMMY_EMAIL1}
+                trigger={['hover', 'focus']}
+                placement="top"
+                overlay={
+                  <Popover id="popover-trigger-hover-focus">
+                    {DUMMY_EMAIL1}
+                  </Popover>
+                }
+              >
+                <Link
+                  className="avatar-overlap"
+                  onClick={logClick}
+                  data-type="frequent-users"
+                  to="/"
+                  target={DUMMY_TARGET1}
+                >
+                  <Avatar
+                    name={DUMMY_DISPLAY_NAME1}
+                    round
+                    size={25}
+                    style={{ position: 'relative' }}
+                  />
+                </Link>
+              </OverlayTrigger>
+            </div>
+          </div>
+          <div className="resource-tags">
+            <div className="resource-tags-label">Tags</div>
+            <div className="resource-tags-tags">{tagBody}</div>
           </div>
         </Link>
       </li>
