@@ -100,14 +100,6 @@
     }
   }
 
-  .resource-expander {
-    text-align: center;
-  }
-
-  .resource-summary-table {
-    text-align: center;
-  }
-
   .resource-type {
     flex: 2;
     margin: auto 24px;
@@ -132,5 +124,37 @@
 }
 
 .list-group-item .resource-list-item.table-list-item {
-  height: 140px;
+  height: 110px;
+}
+
+.resource-collapsible-trigger {
+  width: 100%;
+  text-align: center;
+}
+
+.list-group-item .resource-summary {
+  width: 90%;
+  overflow-x: auto;
+  margin: 0 auto 2% auto;
+  text-align: center;
+
+  .resource-summary-table {
+    width: 100%;
+    margin: auto;
+    border: 2px solid $stroke;
+    border-collapse: collapse;
+
+    th {
+      background: $gray5;
+      white-space: nowrap;
+    }
+
+    th,
+    td {
+      border: 1px solid $stroke;
+      text-align: center;
+      padding: 1%;
+      width: min-content;
+    }
+  }
 }

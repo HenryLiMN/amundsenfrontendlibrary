@@ -5,6 +5,7 @@ import * as React from 'react';
 import * as Avatar from 'react-avatar';
 import { Link } from 'react-router-dom';
 import { OverlayTrigger, Popover } from 'react-bootstrap';
+import Collapsible from 'react-collapsible';
 
 import { ResourceType, TableResource, TagType } from 'interfaces';
 
@@ -69,6 +70,64 @@ class TableListItem extends React.Component<TableListItemProps, {}> {
     const tagBody = DUMMY_TAGS.map((tag, index) => (
       <TagInfo data={tag} key={index} />
     ));
+    const DUMMY_COLS = [
+      'user_id',
+      'join_date',
+      'first_name',
+      'last_name',
+      'city',
+      'plan_tier',
+      'device_type',
+    ];
+    const DUMMY_TABLE_HEADERS = DUMMY_COLS.map((colName, index) => (
+      <th className="resource-summary-table-header-cell">{colName}</th>
+    ));
+    const DUMMY_DATA_TYPES = [
+      'smallint(16)',
+      'datetime',
+      'varchar(20)',
+      'varchar(20)',
+      'varchar(40)',
+      'binary',
+      'varchar(20)',
+    ];
+    const DUMMY_DATA_TYPE_ROW = DUMMY_DATA_TYPES.map((dataType, index) => (
+      <td className="resource-summary-table-cell">{dataType}</td>
+    ));
+    const DUMMY_RANGES = [
+      '[234, 353]',
+      '[03/15/15, 10/3/19]',
+      'N/A',
+      'N/A',
+      'N/A',
+      '[0, 1]',
+      'N/A',
+    ];
+    const DUMMY_RANGE_ROW = DUMMY_RANGES.map((range, index) => (
+      <td className="resource-summary-table-cell">{range}</td>
+    ));
+    const DUMMY_COUNTS = [
+      '7871',
+      '7871',
+      '7871',
+      '7871',
+      '6578',
+      '7871',
+      '7536',
+    ];
+    const DUMMY_COUNT_ROW = DUMMY_COUNTS.map((count, index) => (
+      <td className="resource-summary-table-cell">{count}</td>
+    ));
+    const COLLAPSIBLE_TRIGGER = (
+      <section className="resource-collapsible-trigger">
+        <DownIcon />
+      </section>
+    );
+    const COLLAPSIBLE_TRIGGER_WHEN_OPEN = (
+      <section className="resource-collapsible-trigger">
+        <UpIcon />
+      </section>
+    );
 
     return (
       <li className="list-group-item clickable">
@@ -196,12 +255,37 @@ class TableListItem extends React.Component<TableListItemProps, {}> {
             <div className="resource-tags-tags">{tagBody}</div>
           </div>
         </Link>
-        <div className="resource-expander">
-          <DownIcon />
-        </div>
-        <div className="resource-summary-table">
-          Placeholder for Summary Table
-        </div>
+        <Collapsible
+          trigger={COLLAPSIBLE_TRIGGER}
+          triggerWhenOpen={COLLAPSIBLE_TRIGGER_WHEN_OPEN}
+        >
+          <div className="resource-summary">
+            <table className="resource-summary-table">
+              <thead>
+                <tr>
+                  <th />
+                  {DUMMY_TABLE_HEADERS}
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <th className="resource-summary-table-header-cell">
+                    Data Type
+                  </th>
+                  {DUMMY_DATA_TYPE_ROW}
+                </tr>
+                <tr>
+                  <th className="resource-summary-table-header-cell">Range</th>
+                  {DUMMY_RANGE_ROW}
+                </tr>
+                <tr>
+                  <th className="resource-summary-table-header-cell">Count</th>
+                  {DUMMY_COUNT_ROW}
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </Collapsible>
       </li>
     );
   }
