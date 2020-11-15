@@ -14,6 +14,7 @@ import { getSourceDisplayName, getSourceIconClass } from 'config/config-utils';
 
 import BadgeList from 'components/common/BadgeList';
 import SchemaInfo from 'components/common/ResourceListItem/SchemaInfo';
+import { UpIcon, DownIcon } from 'components/common/SVGIcons';
 import { logClick } from 'ducks/utilMethods';
 import TagInfo from 'components/common/Tags/TagInfo';
 import { LoggingParams } from '../types';
@@ -195,6 +196,12 @@ class TableListItem extends React.Component<TableListItemProps, {}> {
             <div className="resource-tags-tags">{tagBody}</div>
           </div>
         </Link>
+        <div className="resource-expander">
+          <DownIcon />
+        </div>
+        <div className="resource-summary-table">
+          Placeholder for Summary Table
+        </div>
       </li>
     );
   }
