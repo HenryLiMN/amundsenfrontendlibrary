@@ -6,6 +6,16 @@ import * as DocumentTitle from 'react-document-title';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { RouteComponentProps } from 'react-router';
+import {
+  TabContent,
+  TabPane,
+  Nav,
+  NavItem,
+  NavLink,
+  Row,
+  Col,
+} from 'reactstrap';
+import classnames from 'classnames';
 
 import { GlobalState } from 'ducks/rootReducer';
 import { getTableData } from 'ducks/tableMetadata/reducer';
@@ -71,6 +81,7 @@ const TABLE_SOURCE = 'table_page';
 const SORT_CRITERIAS = {
   ...getTableSortCriterias(),
 };
+const OVERVIEW_TAB_KEY = 'overview';
 const COLUMN_TAB_KEY = 'columns';
 
 export interface PropsFromState {
@@ -115,6 +126,7 @@ const ErrorMessage = () => {
 export interface StateProps {
   sortedBy: SortCriteria;
   currentTab: string;
+  activeTab: string;
 }
 
 export class TableDetail extends React.Component<
@@ -128,6 +140,7 @@ export class TableDetail extends React.Component<
   state = {
     sortedBy: SORT_CRITERIAS.sort_order,
     currentTab: COLUMN_TAB_KEY,
+    activeTab: OVERVIEW_TAB_KEY,
   };
 
   componentDidMount() {
@@ -198,6 +211,10 @@ export class TableDetail extends React.Component<
     }
   };
 
+  toggleTab = (tab) => {
+    if (this.state.activeTab !== tab) this.setState({ activeTab: tab });
+  };
+
   renderTabs(editText, editUrl) {
     const tabInfo: TabInfo[] = [];
     const {
@@ -257,8 +274,13 @@ export class TableDetail extends React.Component<
   }
 
   render() {
-    const { isLoading, statusCode, tableData } = this.props;
-    const { currentTab } = this.state;
+    const {
+      isLoading,
+      statusCode,
+      tableData,
+      openRequestDescriptionDialog,
+    } = this.props;
+    const { currentTab, activeTab, sortedBy } = this.state;
     let innerContent;
 
     // We want to avoid rendering the previous table's metadata before new data is fetched in componentDidMount
@@ -317,90 +339,133 @@ export class TableDetail extends React.Component<
             </div>
           </header>
           <div className="column-layout-1">
-            <aside className="left-panel">
-              <EditableSection
-                title={Constants.DESCRIPTION_TITLE}
-                readOnly={!data.is_editable}
-                editText={editText}
-                editUrl={editUrl || undefined}
-              >
-                <TableDescEditableText
-                  maxLength={getMaxLength('tableDescLength')}
-                  value={data.description}
-                  editable={data.is_editable}
-                />
-                <span>
-                  {notificationsEnabled() && <RequestDescriptionText />}
-                </span>
-              </EditableSection>
-              {issueTrackingEnabled() && (
-                <section className="metadata-section">
-                  <TableIssues
-                    tableKey={this.key}
-                    tableName={this.getDisplayName()}
-                  />
-                </section>
-              )}
-              <section className="column-layout-2">
-                <section className="left-panel">
-                  {!!data.last_updated_timestamp && (
-                    <section className="metadata-section">
-                      <div className="section-title">
-                        {Constants.LAST_UPDATED_TITLE}
-                      </div>
-                      <time className="body-2">
-                        {formatDateTimeShort({
-                          epochTimestamp: data.last_updated_timestamp,
-                        })}
-                      </time>
+            <Nav pills vertical>
+              <NavItem>
+                <NavLink
+                  className={classnames({
+                    active: activeTab === OVERVIEW_TAB_KEY,
+                  })}
+                  onClick={() => {
+                    this.toggleTab(OVERVIEW_TAB_KEY);
+                  }}
+                >
+                  Overview
+                </NavLink>
+              </NavItem>
+              <NavItem>
+                <NavLink
+                  className={classnames({
+                    active: activeTab === COLUMN_TAB_KEY,
+                  })}
+                  onClick={() => {
+                    this.toggleTab(COLUMN_TAB_KEY);
+                  }}
+                >
+                  Columns
+                </NavLink>
+              </NavItem>
+            </Nav>
+            <TabContent activeTab={activeTab}>
+              <TabPane tabId={OVERVIEW_TAB_KEY}>
+                <Row>
+                  <Col sm="12">
+                    <EditableSection
+                      title={Constants.DESCRIPTION_TITLE}
+                      readOnly={!data.is_editable}
+                      editText={editText}
+                      editUrl={editUrl || undefined}
+                    >
+                      <TableDescEditableText
+                        maxLength={getMaxLength('tableDescLength')}
+                        value={data.description}
+                        editable={data.is_editable}
+                      />
+                      <span>
+                        {notificationsEnabled() && <RequestDescriptionText />}
+                      </span>
+                    </EditableSection>
+                    {issueTrackingEnabled() && (
+                      <section className="metadata-section">
+                        <TableIssues
+                          tableKey={this.key}
+                          tableName={this.getDisplayName()}
+                        />
+                      </section>
+                    )}
+                    <section className="column-layout-2">
+                      <section className="left-panel">
+                        {!!data.last_updated_timestamp && (
+                          <section className="metadata-section">
+                            <div className="section-title">
+                              {Constants.LAST_UPDATED_TITLE}
+                            </div>
+                            <time className="body-2">
+                              {formatDateTimeShort({
+                                epochTimestamp: data.last_updated_timestamp,
+                              })}
+                            </time>
+                          </section>
+                        )}
+                        {!data.is_view && (
+                          <section className="metadata-section">
+                            <div className="section-title">
+                              {Constants.DATE_RANGE_TITLE}
+                            </div>
+                            <WatermarkLabel watermarks={data.watermarks} />
+                          </section>
+                        )}
+                        <EditableSection title={Constants.TAG_TITLE}>
+                          <TagInput
+                            resourceType={ResourceType.table}
+                            uriKey={tableData.key}
+                          />
+                        </EditableSection>
+                        {this.renderProgrammaticDesc(
+                          data.programmatic_descriptions.left
+                        )}
+                      </section>
+                      <section className="right-panel">
+                        <EditableSection title={Constants.OWNERS_TITLE}>
+                          <TableOwnerEditor resourceType={ResourceType.table} />
+                        </EditableSection>
+                        <section className="metadata-section">
+                          <div className="section-title">
+                            {Constants.FREQ_USERS_TITLE}
+                          </div>
+                          <FrequentUsers readers={data.table_readers} />
+                        </section>
+                        {this.renderProgrammaticDesc(
+                          data.programmatic_descriptions.right
+                        )}
+                      </section>
                     </section>
-                  )}
-                  {!data.is_view && (
-                    <section className="metadata-section">
-                      <div className="section-title">
-                        {Constants.DATE_RANGE_TITLE}
-                      </div>
-                      <WatermarkLabel watermarks={data.watermarks} />
-                    </section>
-                  )}
-                  <EditableSection title={Constants.TAG_TITLE}>
-                    <TagInput
-                      resourceType={ResourceType.table}
-                      uriKey={tableData.key}
+                    {this.renderProgrammaticDesc(
+                      data.programmatic_descriptions.other
+                    )}
+                  </Col>
+                </Row>
+              </TabPane>
+              <TabPane tabId={COLUMN_TAB_KEY}>
+                <Row>
+                  <Col sm="12">
+                    <ListSortingDropdown
+                      options={SORT_CRITERIAS}
+                      onChange={this.handleSortingChange}
                     />
-                  </EditableSection>
-                  {this.renderProgrammaticDesc(
-                    data.programmatic_descriptions.left
-                  )}
-                </section>
-                <section className="right-panel">
-                  <EditableSection title={Constants.OWNERS_TITLE}>
-                    <TableOwnerEditor resourceType={ResourceType.table} />
-                  </EditableSection>
-                  <section className="metadata-section">
-                    <div className="section-title">
-                      {Constants.FREQ_USERS_TITLE}
-                    </div>
-                    <FrequentUsers readers={data.table_readers} />
-                  </section>
-                  {this.renderProgrammaticDesc(
-                    data.programmatic_descriptions.right
-                  )}
-                </section>
-              </section>
-              {this.renderProgrammaticDesc(
-                data.programmatic_descriptions.other
-              )}
-            </aside>
-            <main className="right-panel">
-              {currentTab === COLUMN_TAB_KEY && (
-                <ListSortingDropdown
-                  options={SORT_CRITERIAS}
-                  onChange={this.handleSortingChange}
-                />
-              )}
-              {this.renderTabs(editText, editUrl)}
-            </main>
+                    <ColumnList
+                      openRequestDescriptionDialog={
+                        openRequestDescriptionDialog
+                      }
+                      columns={tableData.columns}
+                      database={tableData.database}
+                      editText={editText}
+                      editUrl={editUrl || undefined}
+                      sortBy={sortedBy}
+                    />
+                  </Col>
+                </Row>
+              </TabPane>
+            </TabContent>
           </div>
         </div>
       );
