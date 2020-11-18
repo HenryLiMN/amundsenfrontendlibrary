@@ -6,6 +6,7 @@ import * as DocumentTitle from 'react-document-title';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { RouteComponentProps } from 'react-router';
+import ReactQuill from 'react-quill';
 import {
   TabContent,
   TabPane,
@@ -14,6 +15,8 @@ import {
   NavLink,
   Row,
   Col,
+  Button,
+  Table,
 } from 'reactstrap';
 import classnames from 'classnames';
 
@@ -79,6 +82,8 @@ import {
 import * as Constants from './constants';
 
 import './styles.scss';
+import 'react-quill/dist/quill.core.css';
+import 'react-quill/dist/quill.snow.css';
 
 const SERVER_ERROR_CODE = 500;
 const DASHBOARDS_PER_PAGE = 10;
@@ -130,8 +135,9 @@ const ErrorMessage = () => {
 
 export interface StateProps {
   sortedBy: SortCriteria;
-  currentTab: string;
+  // currentTab: string;
   activeTab: string;
+  overviewCommentValue: string;
 }
 
 export class TableDetail extends React.Component<
@@ -144,8 +150,9 @@ export class TableDetail extends React.Component<
 
   state = {
     sortedBy: SORT_CRITERIAS.sort_order,
-    currentTab: COLUMN_TAB_KEY,
+    // currentTab: COLUMN_TAB_KEY,
     activeTab: OVERVIEW_TAB_KEY,
+    overviewCommentValue: '',
   };
 
   componentDidMount() {
@@ -212,6 +219,12 @@ export class TableDetail extends React.Component<
       : 'Unknown End Date';
 
     return startDate + ' - ' + endDate;
+  }
+
+  handleOverviewCommentValueChange(content, delta, source, editor) {
+    this.setState({
+      overviewCommentValue: editor.getHTML(),
+    });
   }
 
   renderProgrammaticDesc = (
@@ -298,7 +311,7 @@ export class TableDetail extends React.Component<
         tabs={tabInfo}
         defaultTab="columns"
         onSelect={(key) => {
-          this.setState({ currentTab: key });
+          // this.setState({ currentTab: key });
         }}
       />
     );
@@ -311,7 +324,7 @@ export class TableDetail extends React.Component<
       tableData,
       openRequestDescriptionDialog,
     } = this.props;
-    const { currentTab, activeTab, sortedBy } = this.state;
+    const { activeTab, sortedBy, overviewCommentValue } = this.state;
     let innerContent;
 
     // We want to avoid rendering the previous table's metadata before new data is fetched in componentDidMount
@@ -473,7 +486,16 @@ export class TableDetail extends React.Component<
                       )}
                     </section>
                     <section className="resource-detail-overview-discussion">
-                      Discussion Placeholder
+                      <div className="comment-editor-box">
+                        <ReactQuill
+                          theme="snow"
+                          value={overviewCommentValue}
+                          onChange={this.handleOverviewCommentValueChange}
+                        />
+                      </div>
+                      <div className="comment-btn">
+                        <Button color="success">Comment</Button>
+                      </div>
                     </section>
                   </Col>
                 </Row>
