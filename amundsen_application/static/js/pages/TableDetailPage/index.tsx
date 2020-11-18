@@ -43,7 +43,7 @@ import LoadingSpinner from 'components/common/LoadingSpinner';
 import EditableSection from 'components/common/EditableSection';
 import ColumnList from 'components/ColumnList';
 
-import { formatDateTimeShort } from 'utils/dateUtils';
+import { formatDate, formatDateTimeShort } from 'utils/dateUtils';
 import { getLoggingParams } from 'utils/logUtils';
 
 import {
@@ -52,6 +52,7 @@ import {
   TableMetadata,
   RequestMetadataType,
   SortCriteria,
+  Watermark,
 } from 'interfaces';
 
 import DataPreviewButton from './DataPreviewButton';
@@ -70,6 +71,10 @@ import TableReportsDropdown from './ResourceReportsDropdown';
 import RequestDescriptionText from './RequestDescriptionText';
 import RequestMetadataForm from './RequestMetadataForm';
 import ListSortingDropdown from './ListSortingDropdown';
+import {
+  WATERMARK_INPUT_FORMAT,
+  WatermarkType,
+} from './WatermarkLabel/constants';
 
 import * as Constants from './constants';
 
@@ -181,6 +186,32 @@ export class TableDetail extends React.Component<
     const { params } = match;
 
     return `${params.database}://${params.cluster}.${params.schema}/${params.table}`;
+  }
+
+  getWatermarkDateRange() {
+    const lowWatermark = this.props.tableData.watermarks.find(
+      (watermark: Watermark) => watermark.watermark_type === WatermarkType.LOW
+    );
+    const low = (lowWatermark && lowWatermark.partition_value) || null;
+    const startDate = low
+      ? formatDate({
+          dateString: low,
+          dateStringFormat: WATERMARK_INPUT_FORMAT,
+        })
+      : 'Unknown Start Date';
+
+    const highWatermark = this.props.tableData.watermarks.find(
+      (watermark: Watermark) => watermark.watermark_type === WatermarkType.HIGH
+    );
+    const high = (highWatermark && highWatermark.partition_value) || null;
+    const endDate = high
+      ? formatDate({
+          dateString: high,
+          dateStringFormat: WATERMARK_INPUT_FORMAT,
+        })
+      : 'Unknown End Date';
+
+    return startDate + ' - ' + endDate;
   }
 
   renderProgrammaticDesc = (
@@ -296,6 +327,7 @@ export class TableDetail extends React.Component<
           )}`
         : '';
       const editUrl = data.source ? data.source.source : '';
+      const dateRange = this.getWatermarkDateRange();
 
       innerContent = (
         <div className="resource-detail-layout table-detail">
@@ -318,6 +350,16 @@ export class TableDetail extends React.Component<
                 bookmarkKey={data.key}
                 resourceType={ResourceType.table}
               />
+              {!!data.last_updated_timestamp && (
+                <div className="header-last-updated">
+                  {Constants.LAST_UPDATED_TITLE}:
+                  <time className="body-2">
+                    {formatDateTimeShort({
+                      epochTimestamp: data.last_updated_timestamp,
+                    })}
+                  </time>
+                </div>
+              )}
               <div className="body-2">
                 <TableHeaderBullets
                   database={data.database}
@@ -326,6 +368,11 @@ export class TableDetail extends React.Component<
                 />
                 {data.badges.length > 0 && <BadgeList badges={data.badges} />}
               </div>
+              {!data.is_view && (
+                <section className="resource-details-date-range">
+                  {dateRange}
+                </section>
+              )}
             </div>
             <div className="header-section header-links">
               <WriterLink tableWriter={data.table_writer} />
@@ -368,80 +415,66 @@ export class TableDetail extends React.Component<
             <TabContent activeTab={activeTab}>
               <TabPane tabId={OVERVIEW_TAB_KEY}>
                 <Row>
-                  <Col sm="12">
-                    <EditableSection
-                      title={Constants.DESCRIPTION_TITLE}
-                      readOnly={!data.is_editable}
-                      editText={editText}
-                      editUrl={editUrl || undefined}
-                    >
-                      <TableDescEditableText
-                        maxLength={getMaxLength('tableDescLength')}
-                        value={data.description}
-                        editable={data.is_editable}
-                      />
-                      <span>
-                        {notificationsEnabled() && <RequestDescriptionText />}
-                      </span>
-                    </EditableSection>
-                    {issueTrackingEnabled() && (
+                  <Col sm="3" className="resource-detail-overview-left-col">
+                    <section className="resource-detail-owners-users">
+                      <EditableSection title={Constants.OWNERS_TITLE}>
+                        <TableOwnerEditor resourceType={ResourceType.table} />
+                      </EditableSection>
                       <section className="metadata-section">
-                        <TableIssues
-                          tableKey={this.key}
-                          tableName={this.getDisplayName()}
-                        />
-                      </section>
-                    )}
-                    <section className="column-layout-2">
-                      <section className="left-panel">
-                        {!!data.last_updated_timestamp && (
-                          <section className="metadata-section">
-                            <div className="section-title">
-                              {Constants.LAST_UPDATED_TITLE}
-                            </div>
-                            <time className="body-2">
-                              {formatDateTimeShort({
-                                epochTimestamp: data.last_updated_timestamp,
-                              })}
-                            </time>
-                          </section>
-                        )}
-                        {!data.is_view && (
-                          <section className="metadata-section">
-                            <div className="section-title">
-                              {Constants.DATE_RANGE_TITLE}
-                            </div>
-                            <WatermarkLabel watermarks={data.watermarks} />
-                          </section>
-                        )}
-                        <EditableSection title={Constants.TAG_TITLE}>
-                          <TagInput
-                            resourceType={ResourceType.table}
-                            uriKey={tableData.key}
-                          />
-                        </EditableSection>
-                        {this.renderProgrammaticDesc(
-                          data.programmatic_descriptions.left
-                        )}
-                      </section>
-                      <section className="right-panel">
-                        <EditableSection title={Constants.OWNERS_TITLE}>
-                          <TableOwnerEditor resourceType={ResourceType.table} />
-                        </EditableSection>
-                        <section className="metadata-section">
-                          <div className="section-title">
-                            {Constants.FREQ_USERS_TITLE}
-                          </div>
-                          <FrequentUsers readers={data.table_readers} />
-                        </section>
-                        {this.renderProgrammaticDesc(
-                          data.programmatic_descriptions.right
-                        )}
+                        <div className="section-title">
+                          {Constants.FREQ_USERS_TITLE}
+                        </div>
+                        <FrequentUsers readers={data.table_readers} />
                       </section>
                     </section>
-                    {this.renderProgrammaticDesc(
-                      data.programmatic_descriptions.other
-                    )}
+                    <section className="resource-detail-tags">
+                      <EditableSection title={Constants.TAG_TITLE}>
+                        <TagInput
+                          resourceType={ResourceType.table}
+                          uriKey={tableData.key}
+                        />
+                      </EditableSection>
+                    </section>
+                  </Col>
+                  <Col sm="8" className="resource-detail-overview-right-col">
+                    <section className="resource-detail-overview-info">
+                      <EditableSection
+                        title={Constants.DESCRIPTION_TITLE}
+                        readOnly={!data.is_editable}
+                        editText={editText}
+                        editUrl={editUrl || undefined}
+                      >
+                        <TableDescEditableText
+                          maxLength={getMaxLength('tableDescLength')}
+                          value={data.description}
+                          editable={data.is_editable}
+                        />
+                        <span>
+                          {notificationsEnabled() && <RequestDescriptionText />}
+                        </span>
+                      </EditableSection>
+                      {issueTrackingEnabled() && (
+                        <section className="metadata-section">
+                          <TableIssues
+                            tableKey={this.key}
+                            tableName={this.getDisplayName()}
+                          />
+                        </section>
+                      )}
+                      <section className="column-layout-2">
+                        <section className="left-panel">
+                          {this.renderProgrammaticDesc(
+                            data.programmatic_descriptions.left
+                          )}
+                        </section>
+                      </section>
+                      {this.renderProgrammaticDesc(
+                        data.programmatic_descriptions.other
+                      )}
+                    </section>
+                    <section className="resource-detail-overview-discussion">
+                      Discussion Placeholder
+                    </section>
                   </Col>
                 </Row>
               </TabPane>

@@ -22,6 +22,10 @@
     }
   }
 
+  .resource-header {
+    border: none;
+  }
+
   .header-title-text {
     @extend %text-headline-w2;
   }
@@ -33,6 +37,10 @@
         color: $link-hover-color;
       }
     }
+  }
+
+  .header-last-updated {
+    display: inline-block;
   }
 
   .tab-title {
@@ -64,6 +72,29 @@
     position: absolute;
   }
 
+  .resource-detail-overview-left-col {
+    display: flex;
+    flex-direction: column;
+
+    .resource-detail-owners-users,
+    .resource-detail-tags {
+      border: 2px solid $stroke;
+    }
+
+    .resource-detail-tags {
+      margin-top: 15%;
+    }
+  }
+
+  .resource-detail-overview-right-col {
+    display: flex;
+    flex-direction: column;
+
+    .resource-detail-overview-info {
+      border: 2px solid $stroke;
+    }
+  }
+
   // Bootstrap
 
   .flex-column {
@@ -75,7 +106,7 @@
     display: flex;
     flex-wrap: wrap;
     padding-left: 0;
-    margin: 0 0 0 10%;
+    margin: 0 0 0 2%;
     list-style: none;
     border: 2px solid $stroke;
     flex: 2;
@@ -113,7 +144,7 @@
 
   .tab-content {
     width: 100%;
-    margin: 0 0 2% 4%;
+    margin: 0 0 2% 1%;
     flex: 8;
     overflow: scroll;
 
