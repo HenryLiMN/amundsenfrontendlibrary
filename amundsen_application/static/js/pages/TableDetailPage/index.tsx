@@ -138,6 +138,7 @@ export interface StateProps {
   // currentTab: string;
   activeTab: string;
   overviewCommentValue: string;
+  selectedColumn: string;
 }
 
 export class TableDetail extends React.Component<
@@ -153,6 +154,7 @@ export class TableDetail extends React.Component<
     // currentTab: COLUMN_TAB_KEY,
     activeTab: OVERVIEW_TAB_KEY,
     overviewCommentValue: '',
+    selectedColumn: '',
   };
 
   componentDidMount() {
@@ -259,6 +261,12 @@ export class TableDetail extends React.Component<
     if (this.state.activeTab !== tab) this.setState({ activeTab: tab });
   };
 
+  selectColumn = (tab) => {
+    if (this.state.selectedColumn !== tab) {
+      this.setState({ selectedColumn: tab });
+    }
+  };
+
   renderTabs(editText, editUrl) {
     const tabInfo: TabInfo[] = [];
     const {
@@ -324,7 +332,12 @@ export class TableDetail extends React.Component<
       tableData,
       openRequestDescriptionDialog,
     } = this.props;
-    const { activeTab, sortedBy, overviewCommentValue } = this.state;
+    const {
+      activeTab,
+      sortedBy,
+      overviewCommentValue,
+      selectedColumn,
+    } = this.state;
     let innerContent;
 
     // We want to avoid rendering the previous table's metadata before new data is fetched in componentDidMount
@@ -502,21 +515,85 @@ export class TableDetail extends React.Component<
               </TabPane>
               <TabPane tabId={COLUMN_TAB_KEY}>
                 <Row>
-                  <Col sm="12">
-                    <ListSortingDropdown
-                      options={SORT_CRITERIAS}
-                      onChange={this.handleSortingChange}
-                    />
-                    <ColumnList
-                      openRequestDescriptionDialog={
-                        openRequestDescriptionDialog
-                      }
-                      columns={tableData.columns}
-                      database={tableData.database}
-                      editText={editText}
-                      editUrl={editUrl || undefined}
-                      sortBy={sortedBy}
-                    />
+                  <Col sm="11">
+                    {/* <ListSortingDropdown */}
+                    {/*  options={SORT_CRITERIAS}*/}
+                    {/*  onChange={this.handleSortingChange}*/}
+                    {/* /> */}
+                    <div className="resource-detail-columns-view">
+                      <div className="column-table-wrapper">
+                        <Table hover className="column-table">
+                          <thead>
+                            <tr>
+                              <th>Column</th>
+                              <th>Data Type</th>
+                              <th>Range</th>
+                              <th>Mean</th>
+                              <th>Count</th>
+                              <th>Null</th>
+                              <th>Description</th>
+                              <th>Comments</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {tableData.columns.map((value, index) => {
+                              return (
+                                <tr
+                                  className={
+                                    selectedColumn === value.name
+                                      ? 'selected-row'
+                                      : ''
+                                  }
+                                  onClick={() => this.selectColumn(value.name)}
+                                >
+                                  <td className="column-name-cell">
+                                    {value.name}
+                                  </td>
+                                  <td>{value.col_type}</td>
+                                  <td>range stat</td>
+                                  <td>mean stat</td>
+                                  <td>count stat</td>
+                                  <td>null count stat</td>
+                                  <td>{value.description}</td>
+                                  <td>comments</td>
+                                </tr>
+                              );
+                            })}
+                          </tbody>
+                        </Table>
+                      </div>
+                      <TabContent activeTab={selectedColumn}>
+                        {/* TODO: put ReactQuill outside of the various possible
+                        comment threads on its own OR make a new component for
+                        comment editing that includes ReactQuill for each
+                        column */}
+                        {tableData.columns.map((value, index) => {
+                          return (
+                            <TabPane tabId={value.name}>
+                              <section className="resource-detail-overview-discussion">
+                                Discussion for {tableData.name}.{value.name}
+                                <div className="comment-editor-box">
+                                  <ReactQuill theme="snow" />
+                                </div>
+                                <div className="comment-btn">
+                                  <Button color="success">Comment</Button>
+                                </div>
+                              </section>
+                            </TabPane>
+                          );
+                        })}
+                      </TabContent>
+                    </div>
+                    {/* <ColumnList */}
+                    {/*  openRequestDescriptionDialog={*/}
+                    {/*    openRequestDescriptionDialog*/}
+                    {/*  }*/}
+                    {/*  columns={tableData.columns}*/}
+                    {/*  database={tableData.database}*/}
+                    {/*  editText={editText}*/}
+                    {/*  editUrl={editUrl || undefined}*/}
+                    {/*  sortBy={sortedBy}*/}
+                    {/* /> */}
                   </Col>
                 </Row>
               </TabPane>

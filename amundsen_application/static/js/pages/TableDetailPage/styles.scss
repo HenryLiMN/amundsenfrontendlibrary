@@ -101,6 +101,37 @@
     }
   }
 
+  .resource-detail-columns-view {
+    display: flex;
+    flex-direction: column;
+
+    .column-table-wrapper {
+      overflow: scroll;
+
+      .column-table {
+        border: 2px solid $stroke;
+        cursor: pointer;
+
+        th {
+          background: $gray5;
+        }
+
+        .selected-row {
+          background: $red5;
+        }
+
+        .column-name-cell {
+          color: $mint40;
+          font-weight: 600;
+        }
+      }
+    }
+
+    .column-discussion {
+      margin: 5% 0;
+    }
+  }
+
   // Bootstrap
 
   .flex-column {
