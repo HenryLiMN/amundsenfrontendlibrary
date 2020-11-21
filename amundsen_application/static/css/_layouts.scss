@@ -198,6 +198,7 @@ $screen-lg-container: 1440px;
 // Main Layout
 #main {
   min-width: $body-min-width;
+  background-color: $sieve-bluish-gray;
 }
 
 @media (min-width: $screen-lg-max) {

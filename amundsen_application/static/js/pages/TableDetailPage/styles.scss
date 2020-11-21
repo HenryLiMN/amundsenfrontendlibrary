@@ -5,6 +5,8 @@
 @import 'typography';
 
 .table-detail {
+  overflow: auto;
+
   .column-layout-1 {
     margin-top: 3%;
 
@@ -26,8 +28,15 @@
     border: none;
   }
 
+  .header-section.header-title {
+    display: flex;
+    flex-direction: column;
+  }
+
   .header-title-text {
     @extend %text-headline-w2;
+
+    color: $sieve-light-green;
   }
 
   .header-links {
@@ -41,6 +50,13 @@
 
   .header-last-updated {
     display: inline-block;
+    vertical-align: super;
+  }
+
+  .table-detail-body {
+    section {
+      background-color: $white;
+    }
   }
 
   .tab-title {
@@ -72,6 +88,12 @@
     position: absolute;
   }
 
+  .section-title {
+    font-size: 18px;
+    color: black;
+    font-weight: 700;
+  }
+
   .resource-detail-overview-left-col {
     display: flex;
     flex-direction: column;
@@ -79,10 +101,22 @@
     .resource-detail-owners-users,
     .resource-detail-tags {
       border: 2px solid $stroke;
+      padding: 8%;
+
+      .avatar-label {
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        display: inline-block;
+      }
     }
 
     .resource-detail-tags {
       margin-top: 15%;
+    }
+
+    .resource-frequent-users {
+      margin-top: 10%;
     }
   }
 
@@ -92,12 +126,7 @@
 
     .resource-detail-overview-info {
       border: 2px solid $stroke;
-    }
-
-    .resource-detail-overview-discussion {
-      margin: 5% 0;
-      display: flex;
-      flex-direction: column;
+      padding: 3%;
     }
   }
 
@@ -106,25 +135,31 @@
     flex-direction: column;
 
     .column-table-wrapper {
-      overflow: scroll;
+      background-color: white;
+      overflow: auto;
 
       .column-table {
         border: 2px solid $stroke;
         cursor: pointer;
+        margin: 0;
 
         th {
-          background: $gray5;
+          background: $sieve-gray;
         }
 
-        .selected-row {
+        .selected-col {
           background: $red5;
         }
 
         .column-name-cell {
-          color: $mint40;
+          color: $sieve-light-green;
           font-weight: 600;
         }
       }
+    }
+
+    .tab-content {
+      margin: 0;
     }
 
     .column-discussion {
@@ -148,6 +183,7 @@
     border: 2px solid $stroke;
     flex: 2;
     height: min-content;
+    background-color: $white;
   }
 
   .nav-item {
@@ -161,6 +197,7 @@
     display: block;
     padding: 0.5rem 1rem;
     transition: all 0.15s ease;
+    color: $black;
 
     &:hover,
     &:focus {
@@ -175,22 +212,44 @@
 
   .nav-link.active,
   .show > .nav-link {
-    color: #fff;
-    background-color: #007bff;
+    color: $sieve-red;
+    background-color: $sieve-mint;
   }
 
   .tab-content {
     width: 100%;
     margin: 0 0 2% 3%;
     flex: 8;
-    overflow: scroll;
 
     > .tab-pane {
       display: none;
+      margin-bottom: 10%;
+      overflow-x: hidden;
+      overflow-y: auto;
     }
 
     > .active {
       display: block;
+    }
+  }
+}
+
+.create-comment-wrapper {
+  margin: 5% 0;
+  display: flex;
+  flex-direction: column;
+  padding: 3%;
+  border: 2px solid $stroke;
+
+  .comment-editor-box {
+    margin-top: 3%;
+  }
+
+  .comment-btn-wrapper {
+    margin: 2% 2% 0 0;
+
+    .comment-btn {
+      float: right;
     }
   }
 }

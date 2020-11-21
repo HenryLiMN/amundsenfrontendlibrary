@@ -138,7 +138,7 @@ export interface StateProps {
   // currentTab: string;
   activeTab: string;
   overviewCommentValue: string;
-  selectedColumn: string;
+  selectedColumn: number;
 }
 
 export class TableDetail extends React.Component<
@@ -154,7 +154,7 @@ export class TableDetail extends React.Component<
     // currentTab: COLUMN_TAB_KEY,
     activeTab: OVERVIEW_TAB_KEY,
     overviewCommentValue: '',
-    selectedColumn: '',
+    selectedColumn: 0,
   };
 
   componentDidMount() {
@@ -369,24 +369,27 @@ export class TableDetail extends React.Component<
               />
             </div>
             <div className="header-section header-title">
-              <h1 className="header-title-text truncated">
-                {this.getDisplayName()}
-              </h1>
-              <BookmarkIcon
-                bookmarkKey={data.key}
-                resourceType={ResourceType.table}
-              />
-              {!!data.last_updated_timestamp && (
-                <div className="header-last-updated">
-                  {Constants.LAST_UPDATED_TITLE}:
-                  <time className="body-2">
-                    {formatDateTimeShort({
-                      epochTimestamp: data.last_updated_timestamp,
-                    })}
-                  </time>
-                </div>
-              )}
-              <div className="body-2">
+              <div className="header-top-row">
+                <h1 className="header-title-text truncated">
+                  {this.getDisplayName()}
+                </h1>
+                <BookmarkIcon
+                  bookmarkKey={data.key}
+                  resourceType={ResourceType.table}
+                />
+                {!!data.last_updated_timestamp && (
+                  <div className="header-last-updated">
+                    {'(' + Constants.LAST_UPDATED_TITLE + ': '}
+                    <time className="body-3">
+                      {formatDateTimeShort({
+                        epochTimestamp: data.last_updated_timestamp,
+                      })}
+                      )
+                    </time>
+                  </div>
+                )}
+              </div>
+              <div className="body-3 header-bullets">
                 <TableHeaderBullets
                   database={data.database}
                   cluster={data.cluster}
@@ -395,7 +398,7 @@ export class TableDetail extends React.Component<
                 {data.badges.length > 0 && <BadgeList badges={data.badges} />}
               </div>
               {!data.is_view && (
-                <section className="resource-details-date-range">
+                <section className="body-3 resource-details-date-range">
                   {dateRange}
                 </section>
               )}
@@ -411,7 +414,7 @@ export class TableDetail extends React.Component<
               <ExploreButton tableData={data} />
             </div>
           </header>
-          <div className="column-layout-1">
+          <div className="column-layout-1 table-detail-body">
             <Nav pills vertical>
               <NavItem>
                 <NavLink
@@ -446,7 +449,7 @@ export class TableDetail extends React.Component<
                       <EditableSection title={Constants.OWNERS_TITLE}>
                         <TableOwnerEditor resourceType={ResourceType.table} />
                       </EditableSection>
-                      <section className="metadata-section">
+                      <section className="resource-frequent-users">
                         <div className="section-title">
                           {Constants.FREQ_USERS_TITLE}
                         </div>
@@ -487,18 +490,11 @@ export class TableDetail extends React.Component<
                           />
                         </section>
                       )}
-                      <section className="column-layout-2">
-                        <section className="left-panel">
-                          {this.renderProgrammaticDesc(
-                            data.programmatic_descriptions.left
-                          )}
-                        </section>
-                      </section>
-                      {this.renderProgrammaticDesc(
-                        data.programmatic_descriptions.other
-                      )}
                     </section>
-                    <section className="resource-detail-overview-discussion">
+                    <section className="create-comment-wrapper">
+                      <div className="section-title">
+                        Discussion for {tableData.name}
+                      </div>
                       <div className="comment-editor-box">
                         <ReactQuill
                           theme="snow"
@@ -506,8 +502,10 @@ export class TableDetail extends React.Component<
                           onChange={this.handleOverviewCommentValueChange}
                         />
                       </div>
-                      <div className="comment-btn">
-                        <Button color="success">Comment</Button>
+                      <div className="comment-btn-wrapper">
+                        <Button color="success" className="comment-btn">
+                          Comment
+                        </Button>
                       </div>
                     </section>
                   </Col>
@@ -540,11 +538,11 @@ export class TableDetail extends React.Component<
                               return (
                                 <tr
                                   className={
-                                    selectedColumn === value.name
-                                      ? 'selected-row'
+                                    selectedColumn === index
+                                      ? 'selected-col'
                                       : ''
                                   }
-                                  onClick={() => this.selectColumn(value.name)}
+                                  onClick={() => this.selectColumn(index)}
                                 >
                                   <td className="column-name-cell">
                                     {value.name}
@@ -569,14 +567,21 @@ export class TableDetail extends React.Component<
                         column */}
                         {tableData.columns.map((value, index) => {
                           return (
-                            <TabPane tabId={value.name}>
-                              <section className="resource-detail-overview-discussion">
-                                Discussion for {tableData.name}.{value.name}
+                            <TabPane tabId={index}>
+                              <section className="create-comment-wrapper">
+                                <div className="section-title">
+                                  Discussion for {tableData.name}.{value.name}
+                                </div>
                                 <div className="comment-editor-box">
                                   <ReactQuill theme="snow" />
                                 </div>
-                                <div className="comment-btn">
-                                  <Button color="success">Comment</Button>
+                                <div className="comment-btn-wrapper">
+                                  <Button
+                                    color="success"
+                                    className="comment-btn"
+                                  >
+                                    Comment
+                                  </Button>
                                 </div>
                               </section>
                             </TabPane>
