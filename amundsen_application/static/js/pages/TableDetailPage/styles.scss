@@ -104,6 +104,14 @@
       border: 2px solid $stroke;
       padding: 8%;
 
+      a {
+        max-width: 100%;
+
+        .avatar-label-component {
+          max-width: inherit;
+        }
+      }
+
       .avatar-label {
         overflow: hidden;
         white-space: nowrap;
