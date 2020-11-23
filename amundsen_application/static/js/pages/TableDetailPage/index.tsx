@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import * as React from 'react';
+import * as Avatar from 'react-avatar';
 import * as DocumentTitle from 'react-document-title';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
@@ -19,6 +20,8 @@ import {
   Table,
 } from 'reactstrap';
 import classnames from 'classnames';
+import moment from 'moment';
+import { Comment } from 'antd';
 
 import { GlobalState } from 'ducks/rootReducer';
 import { getTableData } from 'ducks/tableMetadata/reducer';
@@ -84,6 +87,7 @@ import * as Constants from './constants';
 import './styles.scss';
 import 'react-quill/dist/quill.core.css';
 import 'react-quill/dist/quill.snow.css';
+import 'antd/dist/antd.css';
 
 const SERVER_ERROR_CODE = 500;
 const DASHBOARDS_PER_PAGE = 10;
@@ -93,6 +97,18 @@ const SORT_CRITERIAS = {
 };
 const OVERVIEW_TAB_KEY = 'overview';
 const COLUMN_TAB_KEY = 'columns';
+
+const HENRY_AVATAR = (
+  <Avatar name="Henry Li" round size={25} style={{ position: 'relative' }} />
+);
+const CARL_AVATAR = (
+  <Avatar
+    name="Carl Fernandes"
+    round
+    size={25}
+    style={{ position: 'relative' }}
+  />
+);
 
 export interface PropsFromState {
   isLoading: boolean;
@@ -492,9 +508,7 @@ export class TableDetail extends React.Component<
                       )}
                     </section>
                     <section className="create-comment-wrapper">
-                      <div className="section-title">
-                        Discussion for {tableData.name}
-                      </div>
+                      <div className="section-title">Discussion</div>
                       <div className="comment-editor-box">
                         <ReactQuill
                           theme="snow"
@@ -507,6 +521,22 @@ export class TableDetail extends React.Component<
                           Comment
                         </Button>
                       </div>
+                      <Comment
+                        actions={[
+                          <span key="comment-nested-reply-to">Reply</span>,
+                        ]}
+                        author={<a href=".">Henry Li</a>}
+                        avatar={HENRY_AVATAR}
+                        content={
+                          <p>
+                            {'I’ve added descriptions to all columns in the ' +
+                              'Columns tab. Feel free to reply to this thread ' +
+                              'if you have general questions or comments. ' +
+                              'Please let me know asap if you find any errors.'}
+                          </p>
+                        }
+                        datetime={moment('20201115', 'YYYYMMDD').fromNow()}
+                      />
                     </section>
                   </Col>
                 </Row>
@@ -570,7 +600,12 @@ export class TableDetail extends React.Component<
                             <TabPane tabId={index}>
                               <section className="create-comment-wrapper">
                                 <div className="section-title">
-                                  Discussion for {tableData.name}.{value.name}
+                                  <div className="discussion-label">
+                                    Discussion
+                                  </div>
+                                  <div className="table-col-label">
+                                    {tableData.name}.{value.name}
+                                  </div>
                                 </div>
                                 <div className="comment-editor-box">
                                   <ReactQuill theme="snow" />
@@ -583,6 +618,47 @@ export class TableDetail extends React.Component<
                                     Comment
                                   </Button>
                                 </div>
+                                <Comment
+                                  actions={[
+                                    <span key="comment-nested-reply-to">
+                                      Reply
+                                    </span>,
+                                  ]}
+                                  author={<a href=".">Carl Fernandes</a>}
+                                  avatar={CARL_AVATAR}
+                                  content={
+                                    <p>
+                                      {'Why are there null values in the city ' +
+                                        'column?'}
+                                    </p>
+                                  }
+                                  datetime={moment(
+                                    '20191115',
+                                    'YYYYMMDD'
+                                  ).fromNow()}
+                                >
+                                  <Comment
+                                    actions={[
+                                      <span key="comment-nested-reply-to">
+                                        Reply
+                                      </span>,
+                                    ]}
+                                    author={<a href=".">Henry Li</a>}
+                                    avatar={HENRY_AVATAR}
+                                    content={
+                                      <p>
+                                        {"Our application flow didn't " +
+                                          'contain a request for city prior ' +
+                                          'to 2019, so we don t have data ' +
+                                          'on earlier applicants.'}
+                                      </p>
+                                    }
+                                    datetime={moment(
+                                      '20191116',
+                                      'YYYYMMDD'
+                                    ).fromNow()}
+                                  />
+                                </Comment>
                               </section>
                             </TabPane>
                           );

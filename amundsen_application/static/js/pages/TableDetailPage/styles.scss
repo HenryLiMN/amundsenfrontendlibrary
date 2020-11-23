@@ -37,6 +37,7 @@
     @extend %text-headline-w2;
 
     color: $sieve-light-green;
+    margin: 0;
   }
 
   .header-links {
@@ -232,6 +233,17 @@
       display: block;
     }
   }
+
+  .ant-comment {
+    background-color: $white;
+    padding: 3% 3% 0 3%;
+    border-left: 1px solid $stroke;
+    margin-top: 2%;
+
+    .ant-comment-inner {
+      padding: 0;
+    }
+  }
 }
 
 .create-comment-wrapper {
@@ -241,15 +253,28 @@
   padding: 3%;
   border: 2px solid $stroke;
 
+  .discussion-label {
+    display: inline-block;
+  }
+
+  .table-col-label {
+    color: $sieve-light-green;
+    display: inline-block;
+    margin-left: 5%;
+  }
+
   .comment-editor-box {
     margin-top: 3%;
   }
 
   .comment-btn-wrapper {
-    margin: 2% 2% 0 0;
+    background-color: $sieve-gray;
+    border: 1px solid $stroke;
+    border-top: 0;
 
     .comment-btn {
       float: right;
+      margin: 1%;
     }
   }
 }
