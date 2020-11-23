@@ -18,7 +18,7 @@ $avatar-container-size: 40px;
     flex-basis: 234px;
 
     span.title-3 {
-      color: $white;
+      color: $sieve-light-green;
       line-height: $navbar-item-line-height;
     }
   }
@@ -73,6 +73,7 @@ $avatar-container-size: 40px;
     a {
       text-decoration: none;
       display: inline-block;
+      color: $sieve-light-green;
     }
   }
 
